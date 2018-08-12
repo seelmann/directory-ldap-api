@@ -38,6 +38,11 @@ pipeline {
               steps {
                 sh 'mvn -V clean verify'
               }
+              post {
+                always {
+                  junit '**/target/surefire-reports/*.xml'
+                }
+              }
             }
           }
         }
