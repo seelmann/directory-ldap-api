@@ -32,19 +32,20 @@ pipeline {
         stage ('Linux Java 8') {
           agent {
             docker {
-              image 'maven:3-jdk-8'
               label 'ubuntu'
+              image 'maven:3-jdk-8'
+              args "-v ${env.JENKINS_HOME}/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2"
             }
           }
           stages {
             stage ('Compile') {
               steps {
-                sh 'mvn -V clean verify -DskipTests'
+                sh 'mvn -V clean verify -DskipTests -Duser.home=/var/maven'
               }
             }
             stage ('Test') {
               steps {
-                sh 'mvn -V clean verify'
+                sh 'mvn -V clean verify -Duser.home=/var/maven'
               }
               post {
                 always {
@@ -62,19 +63,20 @@ pipeline {
         stage ('Linux Java 11') {
           agent {
             docker {
-              image 'maven:3-jdk-11'
               label 'ubuntu'
+              image 'maven:3-jdk-11'
+              args "-v ${env.JENKINS_HOME}/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2"
             }
           }
           stages {
             stage ('Compile') {
               steps {
-                sh 'mvn -V clean verify -DskipTests'
+                sh 'mvn -V clean verify -DskipTests -Duser.home=/var/maven'
               }
             }
             stage ('Test') {
               steps {
-                sh 'mvn -V clean verify'
+                sh 'mvn -V clean verify -Duser.home=/var/maven'
               }
             }
           }
