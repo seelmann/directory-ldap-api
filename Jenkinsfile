@@ -19,59 +19,73 @@
 pipeline {
   agent none
   stages {
-    stage ('Compile') {
+    stage ('Directory LDAP API') {
       parallel {
-        stage ('Compile Java 8') {
+        stage ('Linux Java 8') {
           agent {
             docker {
               image 'maven:3-jdk-8'
               label 'ubuntu'
             }
           }
-          steps {
-            sh 'mvn -V clean verify -DskipTests'
+          stages {
+            stage ('Compile') {
+              steps {
+                sh 'mvn -V clean verify -DskipTests'
+              }
+            }
+            stage ('Test') {
+              steps {
+                sh 'mvn -V clean verify'
+              }
+            }
           }
         }
-        stage ('Compile Java 11') {
+        stage ('Linux Java 11') {
           agent {
             docker {
               image 'maven:3-jdk-11'
               label 'ubuntu'
             }
           }
-          steps {
-            sh 'mvn -V clean verify -DskipTests'
-          }
-        }
-      }
-    }
-    stage ('Test') {
-      parallel {
-        stage ('Test Java 8') {
-          agent {
-            docker {
-              image 'maven:3-jdk-8'
-              label 'ubuntu'
+          stages {
+            stage ('Compile') {
+              steps {
+                sh 'mvn -V clean verify -DskipTests'
+              }
             }
-          }
-          steps {
-            sh 'mvn -V clean verify'
-          }
-          post {
-            always {
-              junit '**/target/surefire-reports/*.xml'
+            stage ('Test') {
+              steps {
+                sh 'mvn -V clean verify'
+              }
             }
           }
         }
-        stage ('Test Java 11') {
+        stage ('Windows Java 8') {
           agent {
-            docker {
-              image 'maven:3-jdk-11'
-              label 'ubuntu'
-            }
+            label 'Windows'
           }
-          steps {
-            sh 'mvn -V clean verify'
+          when {
+            beforeAgent true
+            environment name: 'JENKINS_URL', value: 'https://builds.apache.org/'
+          }
+          stages {
+            stage ('Compile') {
+              steps {
+                bat '''
+                set JAVA_HOME=F:\\jenkins\\tools\\java\\latest1.8
+                F:\\jenkins\\tools\\maven\\latest3\\bin\\mvn -V clean verify -DskipTests
+                '''
+              }
+            }
+            stage ('Test') {
+              steps {
+                bat '''
+                set JAVA_HOME=F:\\jenkins\\tools\\java\\latest1.8
+                F:\\jenkins\\tools\\maven\\latest3\\bin\\mvn -V clean verify
+                '''
+              }
+            }
           }
         }
       }
