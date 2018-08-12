@@ -18,6 +18,14 @@
  */
 pipeline {
   agent none
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '3'))
+    timeout(time: 1, unit: 'HOURS')
+  }
+  triggers {
+    cron('@weekly')
+    pollSCM('@daily')
+  }
   stages {
     stage ('Directory LDAP API') {
       parallel {
@@ -45,6 +53,11 @@ pipeline {
               }
             }
           }
+          post {
+            always {
+              deleteDir()
+            }
+          }
         }
         stage ('Linux Java 11') {
           agent {
@@ -63,6 +76,11 @@ pipeline {
               steps {
                 sh 'mvn -V clean verify'
               }
+            }
+          }
+          post {
+            always {
+              deleteDir()
             }
           }
         }
@@ -90,6 +108,11 @@ pipeline {
                 F:\\jenkins\\tools\\maven\\latest3\\bin\\mvn -V clean verify
                 '''
               }
+            }
+          }
+          post {
+            always {
+              deleteDir()
             }
           }
         }
