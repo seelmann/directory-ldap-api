@@ -34,7 +34,7 @@ pipeline {
             docker {
               label 'ubuntu'
               image 'maven:3-jdk-8'
-              args "-v ${HOME}/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2"
+              args '-v $HOME/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2'
             }
           }
           steps {
@@ -52,7 +52,7 @@ pipeline {
             docker {
               label 'ubuntu'
               image 'maven:3-jdk-11'
-              args "-v ${HOME}/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2"
+              args '-v $HOME/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2'
             }
           }
           steps {
@@ -91,7 +91,7 @@ pipeline {
         docker {
           label 'ubuntu'
           image 'maven:3-jdk-8'
-          args "-v ${HOME}/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2"
+          args '-v $HOME/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2'
         }
       }
       when {
