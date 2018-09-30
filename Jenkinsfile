@@ -20,7 +20,7 @@ pipeline {
   agent none
   options {
     buildDiscarder(logRotator(numToKeepStr: '3'))
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 2, unit: 'HOURS')
   }
   triggers {
     cron('@weekly')
@@ -84,27 +84,27 @@ pipeline {
             }
           }
         }
-        stage ('Deploy Linux Java 8') {
-          agent {
-            docker {
-              label 'ubuntu'
-              image 'maven:3-jdk-8'
-              args "-v ${env.JENKINS_HOME}/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2"
-            }
-          }
-          when {
-            beforeAgent true
-            branch 'master'
-            environment name: 'JENKINS_URL', value: 'https://builds.apache.org/'
-          }
-          steps {
-            sh 'mvn -V clean deploy -Duser.home=/var/maven'
-          }
-          post {
-            always {
-              deleteDir()
-            }
-          }
+      }
+    }
+    stage ('Deploy') {
+      agent {
+        docker {
+          label 'ubuntu'
+          image 'maven:3-jdk-8'
+          args "-v ${env.JENKINS_HOME}/.m2:/var/maven/.m2 -e MAVEN_CONFIG=/var/maven/.m2"
+        }
+      }
+      when {
+        beforeAgent true
+        branch 'master'
+        environment name: 'JENKINS_URL', value: 'https://builds.apache.org/'
+      }
+      steps {
+        sh 'mvn -V clean deploy -Duser.home=/var/maven'
+      }
+      post {
+        always {
+          deleteDir()
         }
       }
     }
