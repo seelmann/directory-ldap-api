@@ -38,7 +38,7 @@ pipeline {
             }
           }
           steps {
-            sh 'mvn -v'
+            sh 'mvn -V clean verify'
           }
           post {
             always {
