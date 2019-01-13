@@ -27,8 +27,25 @@ pipeline {
     pollSCM('@daily')
   }
   stages {
-    stage ('Directory LDAP API') {
+    stage ('Build and test') {
       parallel {
+        stage ('Build Linux Java 8X') {
+          agent {
+            docker {
+              label 'ubuntu'
+              image 'apachedirectory/maven-build:jdk-8'
+              args '-v $HOME/.m2:home/user/.m2'
+            }
+          }
+          steps {
+            sh 'mvn -v'
+          }
+          post {
+            always {
+              deleteDir()
+            }
+          }
+        }
         stage ('Build Linux Java 8') {
           agent {
             docker {
